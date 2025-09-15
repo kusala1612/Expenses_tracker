@@ -258,3 +258,7 @@ def total_between_dates(user_id):
     except ValueError:
         return jsonify({"error": "Invalid date format; use dd-mm-YYYY"}), 400
     except Exception as e:
+        app.logger.error("Total between dates error: %s", e)
+        return jsonify({"message": "Internal server error"}), 500
+    finally:
+        cursor.close()
