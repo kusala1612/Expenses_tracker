@@ -8,22 +8,22 @@ import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Load local .env (only used for local development)
+# Load .env (works locally, not needed in Render since Render uses environment variables directly)
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-
+# ---------- DATABASE CONNECTION ----------
 def get_db_conn():
     """Lazy DB connection stored in flask.g. Returns None on failure."""
     if getattr(g, "_db_conn", None) is None:
         try:
             g._db_conn = mysql.connector.connect(
-                host=os.environ.get("DB_HOST", "127.0.0.1"),
-                user=os.environ.get("DB_USER", "root"),
-                password=os.environ.get("DB_PASSWORD", "Ombabuji@16"),
-                database=os.environ.get("DB_NAME", "expense_tracker"),
+                host=os.environ.get("DB_HOST"),          # Render DB host
+                user=os.environ.get("DB_USER"),          # Render DB username
+                password=os.environ.get("DB_PASSWORD"),  # Render DB password
+                database=os.environ.get("DB_NAME"),      # Database name
                 port=int(os.environ.get("DB_PORT", 3306)),
                 connection_timeout=10,
             )
@@ -31,7 +31,6 @@ def get_db_conn():
             app.logger.error("DB connect error: %s", e)
             g._db_conn = None
     return g._db_conn
-
 
 @app.teardown_appcontext
 def close_db_conn(exc):
@@ -43,6 +42,7 @@ def close_db_conn(exc):
             pass
 
 
+# ---------- HELPER FUNCTION ----------
 def serialize_rows(rows):
     """Convert datetimes/Decimals to JSON-friendly types."""
     out = []
@@ -57,6 +57,12 @@ def serialize_rows(rows):
                 new[k] = v
         out.append(new)
     return out
+
+
+# ---------- HOME ROUTE ----------
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({"message": "Expense Tracker API is running!"}), 200
 
 
 # ----------------- User Registration -----------------
@@ -243,7 +249,7 @@ def total_between_dates(user_id):
             pass
 
 
+# ---------- START SERVER ----------
 if __name__ == "__main__":
-    # Local dev use: python app.py
     debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() in ("1", "true")
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=debug_mode)
