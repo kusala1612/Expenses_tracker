@@ -14,6 +14,11 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+
+
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("index.html") 
 # ---------- DATABASE CONNECTION ----------
 def get_db_conn():
     """Lazy DB connection stored in flask.g. Returns None on failure."""
