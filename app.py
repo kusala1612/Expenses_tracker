@@ -44,7 +44,6 @@ def close_db_conn(exc):
         except Exception:
             pass
 
-cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 # ---------- HELPER FUNCTION ----------
 def serialize_rows(rows):
@@ -85,7 +84,10 @@ def register():
     hashed = generate_password_hash(password_plain)
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed))
+        cursor.execute(
+            "INSERT INTO users (username, password) VALUES (%s, %s)",
+            (username, hashed),
+        )
         conn.commit()
         return jsonify({"message": "User registered!"}), 201
     except errors.UniqueViolation:
@@ -112,20 +114,21 @@ def login():
     if not username or not password:
         return jsonify({"error": "username and password required"}), 400
 
-    # FIX: use cursor with psycopg2
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
     try:
         cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = cursor.fetchone()
         if user and check_password_hash(user["password"], password):
-            return jsonify({"message": "Login successful!", "user_id": user["id"]}), 200
+            return jsonify(
+                {"message": "Login successful!", "user_id": user["id"]}
+            ), 200
         return jsonify({"message": "Invalid credentials."}), 401
     except Exception as e:
         app.logger.error("Login error: %s", e)
         return jsonify({"message": "Internal server error"}), 500
     finally:
         cursor.close()
+
 
 # ----------------- Add Expense -----------------
 @app.route("/expenses", methods=["POST"])
@@ -137,7 +140,8 @@ def add_expense():
     data = request.json or {}
     required = ("user_id", "date", "description", "amount")
     if not all(k in data for k in required):
-        return jsonify({"error": "user_id, date, description and amount required"}), 400
+        return jsonify(
+            {"error": "user_id, date, description and amount required"}), 400
 
     try:
         date_obj = datetime.strptime(data["date"], "%d-%m-%Y").date()
@@ -145,8 +149,14 @@ def add_expense():
         category = data.get("category", "General")
 
         cursor = conn.cursor()
-        sql = "INSERT INTO expenses (user_id, date, description, amount, category) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, (data["user_id"], date_obj, data["description"], amount, category))
+        sql = """
+            INSERT INTO expenses (user_id, date, description, amount, category)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(
+            sql,
+            (data["user_id"], date_obj, data["description"], amount, category),
+        )
         conn.commit()
         return jsonify({"message": "Expense added!"}), 201
     except ValueError:
@@ -168,7 +178,10 @@ def view_expenses(user_id):
 
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
-        cursor.execute("SELECT * FROM expenses WHERE user_id=%s ORDER BY date DESC", (user_id,))
+        cursor.execute(
+            "SELECT * FROM expenses WHERE user_id=%s ORDER BY date DESC",
+            (user_id,),
+        )
         rows = cursor.fetchall()
         return jsonify(serialize_rows(rows)), 200
     except Exception as e:
@@ -187,7 +200,10 @@ def delete_expense(user_id, expense_id):
 
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM expenses WHERE id=%s AND user_id=%s", (expense_id, user_id))
+        cursor.execute(
+            "DELETE FROM expenses WHERE id=%s AND user_id=%s",
+            (expense_id, user_id),
+        )
         conn.commit()
         if cursor.rowcount == 0:
             return jsonify({"message": "Not found"}), 404
@@ -209,9 +225,14 @@ def total_expenses(user_id):
 
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
-        cursor.execute("SELECT SUM(amount) AS total FROM expenses WHERE user_id=%s", (user_id,))
+        cursor.execute(
+            "SELECT SUM(amount) AS total FROM expenses WHERE user_id=%s",
+            (user_id,),
+        )
         total = cursor.fetchone()
-        total_val = float(total["total"]) if total and total["total"] is not None else 0.0
+        total_val = (
+            float(total["total"]) if total and total["total"] is not None else 0.0
+        )
         return jsonify({"total": total_val}), 200
     except Exception as e:
         app.logger.error("Total error: %s", e)
@@ -236,11 +257,17 @@ def total_between_dates(user_id):
         end = datetime.strptime(data["end"], "%d-%m-%Y").date()
         cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute(
-            "SELECT SUM(amount) AS total FROM expenses WHERE user_id=%s AND date BETWEEN %s AND %s",
+            """
+            SELECT SUM(amount) AS total
+            FROM expenses
+            WHERE user_id=%s AND date BETWEEN %s AND %s
+            """,
             (user_id, start, end),
         )
         total = cursor.fetchone()
-        total_val = float(total["total"]) if total and total["total"] is not None else 0.0
+        total_val = (
+            float(total["total"]) if total and total["total"] is not None else 0.0
+        )
         return jsonify({"total": total_val}), 200
     except ValueError:
         return jsonify({"error": "Invalid date format; use dd-mm-YYYY"}), 400
