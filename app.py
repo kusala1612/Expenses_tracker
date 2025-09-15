@@ -4,10 +4,12 @@ from decimal import Decimal
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security
+import generate_password_hash, check_password_hash
 import psycopg2
-import psycopg2.extras
-from psycopg2 import errors
+import psycopg2.extras from psycopg2 import errors
+from dotenv import load_dotenv
+
 
 # ----------------- LOAD ENV VARIABLES -----------------
 load_dotenv()
