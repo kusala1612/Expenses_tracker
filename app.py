@@ -44,6 +44,7 @@ def close_db_conn(exc):
         except Exception:
             pass
 
+cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 # ---------- HELPER FUNCTION ----------
 def serialize_rows(rows):
