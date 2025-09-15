@@ -9,7 +9,7 @@ CORS(app)
 
 # MySQL connection
 conn = mysql.connector.connect(
-    host="localhost",
+    host="127.0.0.1",
     user="root",
     password="Ombabuji@16",
     database="expense_tracker",
