@@ -112,7 +112,9 @@ def login():
     if not username or not password:
         return jsonify({"error": "username and password required"}), 400
 
+    # FIX: use cursor with psycopg2
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
     try:
         cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = cursor.fetchone()
@@ -124,7 +126,6 @@ def login():
         return jsonify({"message": "Internal server error"}), 500
     finally:
         cursor.close()
-
 
 # ----------------- Add Expense -----------------
 @app.route("/expenses", methods=["POST"])
