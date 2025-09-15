@@ -1,14 +1,16 @@
 import psycopg2
 
- conn = psycopg2.connect(
-            host="dpg-d3412cjuibrs73b0m3t0-a.singapore-postgres.render.com",
-            database="expense_tracker_db_i6nk",
-            user="expense_tracker_db_i6nk_user",
-            password="SWoddph65axD4fgQrLUpGtY0nYA35K7F",
-            port=5432
-        )
+conn = psycopg2.connect(
+    host="dpg-d3412cjuibrs73b0m3t0-a.singapore-postgres.render.com",
+    database="expense_tracker_db_i6nk",
+    user="expense_tracker_db_i6nk_user",
+    password="SWoddph65axD4fgQrLUpGtY0nYA35K7F",
+    port=5432
+)
+
 cursor = conn.cursor()
 
+# Create users table
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -16,6 +18,8 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT NOT NULL
 );
 """)
+
+# Create expenses table
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS expenses (
   id SERIAL PRIMARY KEY,
@@ -30,4 +34,5 @@ CREATE TABLE IF NOT EXISTS expenses (
 conn.commit()
 cursor.close()
 conn.close()
-print("Users table created.")
+
+print("Users and expenses tables created.")
