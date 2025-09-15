@@ -4,30 +4,30 @@ from decimal import Decimal
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
-import mysql.connector
-from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
+import psycopg2
+import psycopg2.extras
+from psycopg2 import errors
 
 # ----------------- LOAD ENV VARIABLES -----------------
-# Works locally with .env, but on Render you must set environment variables in the dashboard
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Allow frontend (Vercel) to call this API
+CORS(app)
 
 
 # ---------- DATABASE CONNECTION ----------
 def get_db_conn():
-    """Lazy DB connection stored in flask.g. Returns None on failure."""
+    """Lazy PostgreSQL connection stored in flask.g"""
     if getattr(g, "_db_conn", None) is None:
         try:
-            g._db_conn = mysql.connector.connect(
-                host=os.environ.get("DB_HOST"),          # Render DB host
-                user=os.environ.get("DB_USER"),          # Render DB username
-                password=os.environ.get("DB_PASSWORD"),  # Render DB password
-                database=os.environ.get("DB_NAME"),      # Database name
-                port=int(os.environ.get("DB_PORT", 3306)),
-                connection_timeout=10,
+            g._db_conn = psycopg2.connect(
+                host=os.environ.get("DB_HOST"),
+                user=os.environ.get("DB_USER"),
+                password=os.environ.get("DB_PASSWORD"),
+                dbname=os.environ.get("DB_NAME"),
+                port=int(os.environ.get("DB_PORT", 5432)),
+                connect_timeout=10,
             )
         except Exception as e:
             app.logger.error("DB connect error: %s", e)
@@ -65,7 +65,7 @@ def serialize_rows(rows):
 # ---------- HOME ROUTE ----------
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"message": "Expense Tracker API is running!"}), 200
+    return jsonify({"message": "Expense Tracker API is running with PostgreSQL!"}), 200
 
 
 # ----------------- User Registration -----------------
@@ -87,9 +87,11 @@ def register():
         cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed))
         conn.commit()
         return jsonify({"message": "User registered!"}), 201
-    except mysql.connector.IntegrityError:
+    except errors.UniqueViolation:
+        conn.rollback()
         return jsonify({"message": "Username already exists."}), 400
     except Exception as e:
+        conn.rollback()
         app.logger.error("Register error: %s", e)
         return jsonify({"message": "Internal server error"}), 500
     finally:
@@ -109,7 +111,7 @@ def login():
     if not username or not password:
         return jsonify({"error": "username and password required"}), 400
 
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = cursor.fetchone()
@@ -136,7 +138,6 @@ def add_expense():
         return jsonify({"error": "user_id, date, description and amount required"}), 400
 
     try:
-        # Convert date from dd-mm-YYYY to Python date object
         date_obj = datetime.strptime(data["date"], "%d-%m-%Y").date()
         amount = float(data["amount"])
         category = data.get("category", "General")
@@ -149,13 +150,11 @@ def add_expense():
     except ValueError:
         return jsonify({"message": "Invalid date or amount format"}), 400
     except Exception as e:
+        conn.rollback()
         app.logger.error("Add expense error: %s", e)
         return jsonify({"message": "Error adding expense"}), 500
     finally:
-        try:
-            cursor.close()
-        except Exception:
-            pass
+        cursor.close()
 
 
 # ----------------- View Expenses -----------------
@@ -165,7 +164,7 @@ def view_expenses(user_id):
     if conn is None:
         return jsonify({"error": "Database unavailable"}), 503
 
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         cursor.execute("SELECT * FROM expenses WHERE user_id=%s ORDER BY date DESC", (user_id,))
         rows = cursor.fetchall()
@@ -192,6 +191,7 @@ def delete_expense(user_id, expense_id):
             return jsonify({"message": "Not found"}), 404
         return jsonify({"message": "Deleted!"}), 200
     except Exception as e:
+        conn.rollback()
         app.logger.error("Delete error: %s", e)
         return jsonify({"message": "Internal server error"}), 500
     finally:
@@ -205,7 +205,7 @@ def total_expenses(user_id):
     if conn is None:
         return jsonify({"error": "Database unavailable"}), 503
 
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     try:
         cursor.execute("SELECT SUM(amount) AS total FROM expenses WHERE user_id=%s", (user_id,))
         total = cursor.fetchone()
@@ -232,7 +232,7 @@ def total_between_dates(user_id):
     try:
         start = datetime.strptime(data["start"], "%d-%m-%Y").date()
         end = datetime.strptime(data["end"], "%d-%m-%Y").date()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute(
             "SELECT SUM(amount) AS total FROM expenses WHERE user_id=%s AND date BETWEEN %s AND %s",
             (user_id, start, end),
@@ -246,10 +246,7 @@ def total_between_dates(user_id):
         app.logger.error("Total between dates error: %s", e)
         return jsonify({"message": "Internal server error"}), 500
     finally:
-        try:
-            cursor.close()
-        except Exception:
-            pass
+        cursor.close()
 
 
 # ---------- START SERVER ----------
