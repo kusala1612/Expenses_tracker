@@ -17,22 +17,22 @@ CORS(app)
 
 
 # ---------- DATABASE CONNECTION ----------
-def get_db_conn():
-    """Lazy PostgreSQL connection stored in flask.g"""
-    if getattr(g, "_db_conn", None) is None:
-        try:
-            g._db_conn = psycopg2.connect(
-                host=os.environ.get("DB_HOST"),
-                user=os.environ.get("DB_USER"),
-                password=os.environ.get("DB_PASSWORD"),
-                dbname=os.environ.get("DB_NAME"),
-                port=int(os.environ.get("DB_PORT", 5432)),
-                connect_timeout=10,
-            )
-        except Exception as e:
-            app.logger.error("DB connect error: %s", e)
-            g._db_conn = None
-    return g._db_conn
+import psycopg2
+import psycopg2.extras
+
+def get_db_connection():
+    try:
+        conn = psycopg2.connect(
+            host="dpg-d3412cjuibrs73b0m3t0-a.singapore-postgres.render.com",
+            database="expense_tracker_db_i6nk",
+            user="expense_tracker_db_i6nk_user",
+            password="SWoddph65axD4fgQrLUpGtY0nYA35K7F",
+            port=5432
+        )
+        return conn
+    except Exception as e:
+        print("DB connect error:", e)
+        return None
 
 
 @app.teardown_appcontext
