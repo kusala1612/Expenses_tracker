@@ -81,10 +81,9 @@
   </div>
 
   <script>
-    // Use your Render backend
-    const BASE_API = "https://expenses-tracker-1-msb1.onrender.com";
+    const BASE_API = "https://expenses-tracker-1-msb1.onrender.com"; // Render backend URL
 
-    // --- Login ---
+    // Login
     async function login() {
       const username = document.getElementById("login-username").value;
       const password = document.getElementById("login-password").value;
@@ -95,7 +94,6 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
         });
-
         const data = await res.json();
 
         if (res.ok && data.message === "Login successful") {
@@ -106,12 +104,12 @@
         } else {
           alert(data.message || "Login failed");
         }
-      } catch (err) {
+      } catch {
         alert("Error connecting to server");
       }
     }
 
-    // --- Register ---
+    // Register
     async function register() {
       const username = document.getElementById("register-username").value;
       const password = document.getElementById("register-password").value;
@@ -122,7 +120,6 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
         });
-
         const data = await res.json();
 
         if (res.ok && data.message === "User registered!") {
@@ -131,12 +128,12 @@
         } else {
           alert(data.message || "Registration failed");
         }
-      } catch (err) {
+      } catch {
         alert("Error connecting to server");
       }
     }
 
-    // --- Add Expense ---
+    // Add Expense
     async function addExpense() {
       const amount = document.getElementById("amount").value;
       const description = document.getElementById("description").value;
@@ -153,7 +150,6 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, amount, description })
         });
-
         const data = await res.json();
 
         if (res.ok) {
@@ -163,19 +159,18 @@
         } else {
           alert(data.message || "Failed to add expense");
         }
-      } catch (err) {
+      } catch {
         alert("Error connecting to server");
       }
     }
 
-    // --- Load Expenses ---
+    // Load Expenses
     async function loadExpenses() {
       const username = document.getElementById("user").innerText;
 
       try {
         const res = await fetch(`${BASE_API}/get_expenses?username=${username}`);
         const data = await res.json();
-
         const list = document.getElementById("expenses");
         list.innerHTML = "";
 
@@ -188,12 +183,12 @@
         } else {
           list.innerHTML = "<li>No expenses yet.</li>";
         }
-      } catch (err) {
+      } catch {
         alert("Error loading expenses");
       }
     }
 
-    // --- Logout ---
+    // Logout
     function logout() {
       document.getElementById("dashboard").style.display = "none";
       document.getElementById("login").style.display = "block";
@@ -201,7 +196,7 @@
       document.getElementById("login-password").value = "";
     }
 
-    // --- Page Toggle ---
+    // Toggle Pages
     function showRegister() {
       document.getElementById("login").style.display = "none";
       document.getElementById("register").style.display = "block";

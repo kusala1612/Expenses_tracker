@@ -8,17 +8,14 @@ import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Load .env (works locally, not needed in Render since Render uses environment variables directly)
+# ----------------- LOAD ENV VARIABLES -----------------
+# Works locally with .env, but on Render you must set environment variables in the dashboard
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Allow frontend (Vercel) to call this API
 
 
-
-@app.route("/", methods=["GET"])
-def home():
-    return render_template("index.html") 
 # ---------- DATABASE CONNECTION ----------
 def get_db_conn():
     """Lazy DB connection stored in flask.g. Returns None on failure."""
@@ -36,6 +33,7 @@ def get_db_conn():
             app.logger.error("DB connect error: %s", e)
             g._db_conn = None
     return g._db_conn
+
 
 @app.teardown_appcontext
 def close_db_conn(exc):
@@ -138,7 +136,7 @@ def add_expense():
         return jsonify({"error": "user_id, date, description and amount required"}), 400
 
     try:
-        # The client sends date as dd-mm-YYYY; convert to date object for DB
+        # Convert date from dd-mm-YYYY to Python date object
         date_obj = datetime.strptime(data["date"], "%d-%m-%Y").date()
         amount = float(data["amount"])
         category = data.get("category", "General")
