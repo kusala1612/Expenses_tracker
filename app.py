@@ -23,12 +23,14 @@ def get_db_connection():
             database="expense_tracker_db_i6nk",
             user="expense_tracker_db_i6nk_user",
             password="SWoddph65axD4fgQrLUpGtY0nYA35K7F",
-            port=5432
+            port=5432,
+            sslmode="require"
         )
         return conn
     except Exception as e:
         print("DB connect error:", e)
         return None
+
 
 @app.teardown_appcontext
 def close_db_conn(exc):
