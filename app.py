@@ -32,6 +32,7 @@ def get_db_connection():
         return None
 
 
+
 @app.teardown_appcontext
 def close_db_conn(exc):
     conn = getattr(g, "_db_conn", None)
