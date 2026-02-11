@@ -18,18 +18,13 @@ CORS(app)
 # ---------- DATABASE CONNECTION ----------
 def get_db_connection():
     try:
-        conn = psycopg2.connect(
-            host="dpg-d3412cjuibrs73b0m3t0-a.singapore-postgres.render.com",
-            database="expense_tracker_db_i6nk",
-            user="expense_tracker_db_i6nk_user",
-            password="SWoddph65axD4fgQrLUpGtY0nYA35K7F",
-            port=5432,
-            sslmode="require"
-        )
+        database_url = os.getenv("DATABASE_URL")
+        conn = psycopg2.connect(database_url)
         return conn
     except Exception as e:
         print("DB connect error:", e)
         return None
+
 
 
 
