@@ -61,6 +61,33 @@ def home():
     return jsonify({"message": "Expense Tracker API is running with PostgreSQL!"}), 200
 
 # ----------------- User Registration -----------------
+def create_tables():
+    conn = get_db_connection()
+    if conn is None:
+        return
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(255) UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        );
+    """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            date DATE NOT NULL,
+            description TEXT NOT NULL,
+            amount NUMERIC(10,2) NOT NULL,
+            category VARCHAR(100) DEFAULT 'General'
+        );
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+create_tables()
 @app.route("/register", methods=["POST"])
 def register():
     conn = get_db_connection()
