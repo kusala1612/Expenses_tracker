@@ -105,7 +105,9 @@ Home
 <script>
 
 const userId =
-localStorage.getItem("userId");
+localStorage.getItem("userId")
+||
+sessionStorage.getItem("userId");
 
 async function addIncome(){
 

@@ -215,20 +215,22 @@ Current Balance:
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
+        console.log(data);
 
 if (res.ok && data.message === "Login successful!") {
 
     if(document.getElementById("stayLoggedIn").checked){
 
-        localStorage.setItem(
-            "userId",
-            data.user_id
-        );
+    localStorage.setItem(
+    "userId",
+    data.userId
+);
+sessionStorage.setItem(
+    "userId",
+    data.userId
+);
 
-        localStorage.setItem(
-            "username",
-            username
-        );
+
 
     }else{
 
@@ -265,7 +267,7 @@ if (res.ok && data.message === "Login successful!") {
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-
+        console.log(data);
         if (res.ok && data.message === "User registered!") {
           alert("Registration successful, please login.");
           showLogin();

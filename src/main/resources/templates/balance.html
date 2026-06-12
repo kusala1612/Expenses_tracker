@@ -129,7 +129,7 @@ await incomeRes.json();
 document.getElementById(
 "income"
 ).innerText =
-"₹" + incomeData.total;
+"₹" + (incomeData.total || 0);
 
 const expenseRes =
 await fetch(
@@ -142,7 +142,7 @@ await expenseRes.json();
 document.getElementById(
 "expense"
 ).innerText =
-"₹" + expenseData.total;
+"₹" + (expenseData.total || 0);
 
 const balanceRes =
 await fetch(
@@ -155,7 +155,7 @@ await balanceRes.json();
 document.getElementById(
 "balance"
 ).innerText =
-"₹" + balanceData.balance;
+"₹" + (balanceData.balance || 0);
 
 }
 
