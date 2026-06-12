@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Manage Income</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#F8F5F2;
+    margin:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:20px auto;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+button{
+    padding:8px 15px;
+    margin:5px;
+    border:none;
+    border-radius:5px;
+    color:white;
+    cursor:pointer;
+}
+
+.edit{
+    background:orange;
+}
+
+.delete{
+    background:red;
+}
+
+.home{
+    background:green;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h1>Manage Income</h1>
+</div>
+
+<div class="container">
+
+<div id="incomeList"></div>
+
+<button class="home" onclick="location.href='/home'">
+Home
+</button>
+
+</div>
+
+<script>
+
+const userId =
+localStorage.getItem("userId") ||
+sessionStorage.getItem("userId");
+
+loadIncome();
+
+async function loadIncome(){
+
+const response =
+await fetch(`/income/${userId}`);
+
+const incomes =
+await response.json();
+
+const container =
+document.getElementById("incomeList");
+
+container.innerHTML="";
+
+incomes.forEach(income=>{
+
+container.innerHTML += `
+
+<div class="card">
+
+<b>Date:</b> ${income.date}<br>
+<b>Source:</b> ${income.source}<br>
+<b>Amount:</b> ₹${income.amount}<br><br>
+
+<button
+class="edit"
+onclick="editIncome(${income.id})">
+
+Edit
+
+</button>
+
+<button
+class="delete"
+onclick="deleteIncome(${income.id})">
+
+Delete
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+async function editIncome(id){
+
+const source =
+prompt("Enter source");
+
+const amount =
+prompt("Enter amount");
+
+await fetch(`/income/${id}`,{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+source:source,
+amount:amount
+
+})
+
+});
+
+loadIncome();
+
+}
+
+async function deleteIncome(id){
+
+await fetch(`/income/${id}`,{
+
+method:"DELETE"
+
+});
+
+loadIncome();
+
+}
+
+</script>
+
+</body>
+</html>
