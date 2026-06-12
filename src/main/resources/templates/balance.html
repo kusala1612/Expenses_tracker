@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Check Balance</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#F8F5F2;
+    margin:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:30px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.summary{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:20px;
+}
+
+.box{
+    width:220px;
+    padding:20px;
+    border-radius:12px;
+    color:white;
+}
+
+.income{
+    background:#2ECC71;
+}
+
+.expense{
+    background:#E63946;
+}
+
+.balance{
+    background:#F39C12;
+}
+
+button{
+    margin-top:20px;
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    background:#2D6A4F;
+    color:white;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>Check Balance</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<div class="summary">
+
+<div class="box income">
+<h3>Total Income</h3>
+<h2 id="income">₹0</h2>
+</div>
+
+<div class="box expense">
+<h3>Total Expenditure</h3>
+<h2 id="expense">₹0</h2>
+</div>
+
+<div class="box balance">
+<h3>Current Balance</h3>
+<h2 id="balance">₹0</h2>
+</div>
+
+</div>
+
+<button onclick="goHome()">
+Home
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const userId =
+localStorage.getItem("userId");
+
+async function loadBalance(){
+
+const incomeRes =
+await fetch(
+`/income/total/${userId}`
+);
+
+const incomeData =
+await incomeRes.json();
+
+document.getElementById(
+"income"
+).innerText =
+"₹" + incomeData.total;
+
+const expenseRes =
+await fetch(
+`/expenses/total/${userId}`
+);
+
+const expenseData =
+await expenseRes.json();
+
+document.getElementById(
+"expense"
+).innerText =
+"₹" + expenseData.total;
+
+const balanceRes =
+await fetch(
+`/balance/${userId}`
+);
+
+const balanceData =
+await balanceRes.json();
+
+document.getElementById(
+"balance"
+).innerText =
+"₹" + balanceData.balance;
+
+}
+
+loadBalance();
+
+function goHome(){
+
+window.location.href =
+"/home";
+
+}
+
+</script>
+
+</body>
+</html>
