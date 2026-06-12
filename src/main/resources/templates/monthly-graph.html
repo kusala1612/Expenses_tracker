@@ -81,97 +81,78 @@ sessionStorage.getItem("userId");
 async function loadGraph(){
 
 const response =
-await fetch(
-`/monthly_summary/${userId}`
-);
+await fetch(`/monthly_summary/${userId}`);
 
 const data =
 await response.json();
+
 console.log(data);
-const monthOrder = [
-    "JANUARY",
-    "FEBRUARY",
-    "MARCH",
-    "APRIL",
-    "MAY",
-    "JUNE",
-    "JULY",
-    "AUGUST",
-    "SEPTEMBER",
-    "OCTOBER",
-    "NOVEMBER",
-    "DECEMBER"
-];
 
-const labels = [];
-const values = [];
+const monthOrder = {
+    JANUARY:1,
+    FEBRUARY:2,
+    MARCH:3,
+    APRIL:4,
+    MAY:5,
+    JUNE:6,
+    JULY:7,
+    AUGUST:8,
+    SEPTEMBER:9,
+    OCTOBER:10,
+    NOVEMBER:11,
+    DECEMBER:12
+};
 
-monthOrder.forEach(month => {
-
-    if(data[month] !== undefined){
-
-        labels.push(month);
-
-        values.push(data[month]);
-
-    }
-
-});
-
-new Chart(
-document.getElementById(
-"monthlyChart"
-),
-{
-type:"line",
-
-data:{
-labels:labels,
-
-datasets:[{
-
-label:
-"Monthly Expenditure",
-
-data:values,
-
-borderColor:"black",
-
-backgroundColor:
-"transparent",
-
-tension:0.3
-
-}]
-},
-
-options:{
-
-responsive:true,
-
-scales:{
-
-x:{
-title:{
-display:true,
-text:"Months"
-}
-},
-
-y:{
-title:{
-display:true,
-text:"Amount (₹)"
-}
-}
-
-}
-
-}
-
-}
+data.sort((a,b)=>
+monthOrder[a.month] -
+monthOrder[b.month]
 );
 
+const labels =
+data.map(item => item.month);
+
+const values =
+data.map(item => item.total);
+
+new Chart(
+document.getElementById("monthlyChart"),
+{
+    type:"line",
+
+    data:{
+        labels:labels,
+
+        datasets:[{
+            label:"Monthly Expenditure",
+            data:values,
+            borderColor:"black",
+            backgroundColor:"transparent",
+            tension:0.3,
+            fill:false
+        }]
+    },
+
+    options:{
+        responsive:true,
+
+        scales:{
+            x:{
+                title:{
+                    display:true,
+                    text:"Months"
+                }
+            },
+
+            y:{
+                title:{
+                    display:true,
+                    text:"Amount (₹)"
+                },
+                beginAtZero:true
+            }
+        }
+    }
+});
 }
 
 loadGraph();
