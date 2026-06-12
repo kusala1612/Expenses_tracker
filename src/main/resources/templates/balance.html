@@ -112,8 +112,10 @@ Home
 <script>
 
 const userId =
-localStorage.getItem("userId");
-
+localStorage.getItem("userId")
+||
+sessionStorage.getItem("userId");
+console.log("User ID =", userId);
 async function loadBalance(){
 
 const incomeRes =
