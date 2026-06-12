@@ -78,12 +78,10 @@ localStorage.getItem("userId")
 ||
 sessionStorage.getItem("userId");
 
-async function loadGraph(){async function loadGraph(){
+async function loadGraph(){
 
 const response =
-await fetch(
-`/monthly_summary/${userId}`
-);
+await fetch(`/monthly_summary/${userId}`);
 
 const data =
 await response.json();
@@ -133,8 +131,8 @@ label:"Monthly Expenditure",
 data:values,
 borderColor:"black",
 backgroundColor:"transparent",
-tension:0.3,
-fill:false
+fill:false,
+tension:0.3
 }]
 },
 
@@ -161,70 +159,6 @@ text:"Amount (₹)"
 }
 );
 
-}
-
-const response =
-await fetch(`/monthly_summary/${userId}`);
-
-const data =
-await response.json();
-
-console.log(data);
-
-const monthOrder = {
-    JANUARY:1,
-    FEBRUARY:2,
-    MARCH:3,
-    APRIL:4,
-    MAY:5,
-    JUNE:6,
-    JULY:7,
-    AUGUST:8,
-    SEPTEMBER:9,
-    OCTOBER:10,
-    NOVEMBER:11,
-    DECEMBER:12
-};
-
-new Chart(
-document.getElementById("monthlyChart"),
-{
-    type:"line",
-
-    data:{
-        labels:labels,
-
-        datasets:[{
-            label:"Monthly Expenditure",
-            data:values,
-            borderColor:"black",
-            backgroundColor:"transparent",
-            tension:0.3,
-            fill:false
-        }]
-    },
-
-    options:{
-        responsive:true,
-
-        scales:{
-            x:{
-                title:{
-                    display:true,
-                    text:"Months"
-                }
-            },
-
-            y:{
-                title:{
-                    display:true,
-                    text:"Amount (₹)"
-                },
-                beginAtZero:true
-            }
-        }
-    }
-});
 }
 
 loadGraph();
