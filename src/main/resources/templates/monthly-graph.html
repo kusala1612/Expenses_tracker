@@ -103,17 +103,6 @@ const monthOrder = {
     DECEMBER:12
 };
 
-data.sort((a,b)=>
-monthOrder[a.month] -
-monthOrder[b.month]
-);
-
-const labels =
-data.map(item => item.month);
-
-const values =
-data.map(item => item.total);
-
 new Chart(
 document.getElementById("monthlyChart"),
 {
