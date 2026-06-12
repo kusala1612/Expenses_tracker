@@ -200,18 +200,22 @@ Current Balance:
         });
         const data = await res.json();
 
-        if (res.ok && data.message === "Login successful!") {
-          userId = data.user_id;
-          document.getElementById("user").innerText = username;
-          document.getElementById("expense-date").value =new Date().toISOString().split("T")[0];
-          document.getElementById("income-date").value =new Date().toISOString().split("T")[0];
-          document.getElementById("login").style.display = "none";
-          document.getElementById("dashboard").style.display = "block";
-        loadExpenses();
-        loadTotal();
-        loadIncomeTotal();
-        loadSavings();
-        } else {
+if (res.ok && data.message === "Login successful!") {
+
+    localStorage.setItem(
+        "userId",
+        data.user_id
+    );
+
+    localStorage.setItem(
+        "username",
+        username
+    );
+
+    window.location.href = "/home";
+
+}
+ else {
           alert(data.message || "Login failed");
         }
       } catch {
@@ -285,11 +289,11 @@ async function addIncome() {
      "application/json"
    },
    body:JSON.stringify({
-      user_id:userId,
-      date,
-      source,
-      amount
-   })
+   userId:userId,
+   date,
+   source,
+   amount
+})
  });
 
  const data =
@@ -345,12 +349,12 @@ async function addExpense() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      user_id: userId,
+      userId: userId,
       date,
       description,
       amount,
       category
-    })
+})
   });
 
   const data = await res.json();
