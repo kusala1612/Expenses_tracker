@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Monthly Graph</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#F8F5F2;
+    margin:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:1000px;
+    margin:30px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    background:#2D6A4F;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+canvas{
+    max-height:500px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h1>Monthly Graph</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<canvas id="monthlyChart"></canvas>
+
+<button onclick="goHome()">
+Home
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const userId =
+localStorage.getItem("userId");
+
+async function loadGraph(){
+
+const response =
+await fetch(
+`/monthly_summary/${userId}`
+);
+
+const data =
+await response.json();
+
+const labels =
+Object.keys(data);
+
+const values =
+Object.values(data);
+
+new Chart(
+document.getElementById(
+"monthlyChart"
+),
+{
+type:"line",
+
+data:{
+labels:labels,
+
+datasets:[{
+
+label:
+"Monthly Expenditure",
+
+data:values,
+
+borderColor:"black",
+
+backgroundColor:
+"transparent",
+
+tension:0.3
+
+}]
+},
+
+options:{
+
+responsive:true,
+
+scales:{
+
+x:{
+title:{
+display:true,
+text:"Months"
+}
+},
+
+y:{
+title:{
+display:true,
+text:"Amount (₹)"
+}
+}
+
+}
+
+}
+
+}
+);
+
+}
+
+loadGraph();
+
+function goHome(){
+
+window.location.href =
+"/home";
+
+}
+
+</script>
+
+</body>
+</html>
