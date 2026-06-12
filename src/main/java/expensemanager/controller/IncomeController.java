@@ -38,4 +38,27 @@ public class IncomeController {
         return incomeRepository
                 .findByUserId(userId);
     }
+    @GetMapping("/income/total/{userId}")
+public Map<String, Double> totalIncome(
+        @PathVariable Long userId){
+
+    double total =
+            incomeRepository
+                    .findByUserId(userId)
+                    .stream()
+                    .mapToDouble(
+                            Income::getAmount
+                    )
+                    .sum();
+
+    Map<String, Double> response =
+            new HashMap<>();
+
+    response.put(
+            "total",
+            total
+    );
+
+    return response;
+}
 }
