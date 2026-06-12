@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Expenditure Tracker</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#F8F5F2;
+    margin:0;
+    padding:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:30px auto;
+    text-align:center;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn{
+    display:inline-block;
+    width:250px;
+    padding:15px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+    color:white;
+}
+
+.income{
+    background:#2ECC71;
+}
+
+.expense{
+    background:#E63946;
+}
+
+.normal{
+    background:#40916C;
+}
+
+.logout{
+    background:#555;
+}
+
+.btn:hover{
+    opacity:0.9;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Expenditure Tracker</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h2>
+Welcome,
+<span id="username">User</span>
+</h2>
+
+<br>
+
+<button class="btn income"
+onclick="location.href='/income-page'">
+🟢 Add Income
+</button>
+
+<button class="btn expense"
+onclick="location.href='/expenditure-page'">
+🔴 Add Expenditure
+</button>
+
+<button class="btn normal"
+onclick="location.href='/view-expenditure'">
+📋 View Expenditure
+</button>
+
+<button class="btn normal"
+onclick="location.href='/monthly-graph'">
+📈 Monthly Graph
+</button>
+
+<button class="btn normal"
+onclick="location.href='/yearly-graph'">
+📊 Yearly Graph
+</button>
+
+<button class="btn normal"
+onclick="location.href='/category-wise'">
+🥧 Category Wise
+</button>
+
+<button class="btn normal"
+onclick="location.href='/balance-page'">
+💰 Check Balance
+</button>
+
+<button class="btn normal"
+onclick="location.href='/pdf-page'">
+📄 Download PDF
+</button>
+
+<button class="btn logout"
+onclick="logout()">
+🚪 Logout
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("username")
+.innerText =
+localStorage.getItem("username");
+
+function logout(){
+
+localStorage.clear();
+
+window.location.href="/";
+
+}
+
+</script>
+
+</body>
+</html>
