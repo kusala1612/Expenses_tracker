@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>View Expenditure</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#F8F5F2;
+    margin:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:30px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+    margin:5px;
+}
+
+.searchBtn{
+    background:#40916C;
+}
+
+.editBtn{
+    background:#F4A261;
+}
+
+.deleteBtn{
+    background:#E63946;
+}
+
+.homeBtn{
+    background:#2D6A4F;
+}
+
+.calculateBtn{
+    background:#40916C;
+}
+
+.expense{
+    background:#f8f8f8;
+    padding:15px;
+    margin:10px 0;
+    border-radius:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>View Expenditure</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Search</h3>
+
+<input
+type="text"
+id="keyword"
+placeholder="Search Description">
+
+<button
+class="searchBtn"
+onclick="searchExpense()">
+Search
+</button>
+
+<button
+class="searchBtn"
+onclick="loadExpenses()">
+Show All
+</button>
+
+<hr>
+
+<div id="expenseList">
+
+</div>
+
+<hr>
+
+<h3>Expenditure Between Dates</h3>
+
+<label>From Date</label>
+
+<input
+type="date"
+id="startDate">
+
+<label>To Date</label>
+
+<input
+type="date"
+id="endDate">
+
+<button
+class="calculateBtn"
+onclick="calculateTotal()">
+Calculate
+</button>
+
+<h3>
+Total Expenditure :
+₹<span id="totalAmount">0</span>
+</h3>
+
+<button
+class="homeBtn"
+onclick="goHome()">
+Home
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const userId =
+localStorage.getItem("userId");
+
+window.onload =
+loadExpenses;
+
+async function loadExpenses(){
+
+const response =
+await fetch(
+`/expenses/${userId}`
+);
+
+const expenses =
+await response.json();
+
+showExpenses(
+expenses
+);
+
+}
+
+function showExpenses(
+expenses
+){
+
+const div =
+document.getElementById(
+"expenseList"
+);
+
+div.innerHTML="";
+
+expenses.forEach(
+expense=>{
+
+div.innerHTML += `
+
+<div class="expense">
+
+<b>Date:</b>
+${expense.date}
+<br>
+
+<b>Description:</b>
+${expense.description}
+<br>
+
+<b>Amount:</b>
+₹${expense.amount}
+<br>
+
+<b>Category:</b>
+${expense.category}
+<br><br>
+
+<button
+class="editBtn"
+onclick="editExpense(${expense.id})">
+Edit
+</button>
+
+<button
+class="deleteBtn"
+onclick="deleteExpense(${expense.id})">
+Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+async function searchExpense(){
+
+const keyword =
+document.getElementById(
+"keyword"
+).value;
+
+const response =
+await fetch(
+`/expenses/search/${userId}?keyword=${keyword}`
+);
+
+const data =
+await response.json();
+
+showExpenses(
+data
+);
+
+}
+
+async function deleteExpense(
+expenseId
+){
+
+await fetch(
+`/expenses/${userId}/${expenseId}`,
+{
+method:"DELETE"
+}
+);
+
+loadExpenses();
+
+}
+
+async function editExpense(
+id
+){
+
+const amount =
+prompt(
+"Enter New Amount"
+);
+
+const description =
+prompt(
+"Enter New Description"
+);
+
+const category =
+prompt(
+"Enter New Category"
+);
+
+await fetch(
+`/expenses/${id}`,
+{
+method:"PUT",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+
+amount,
+description,
+category
+
+})
+}
+);
+
+loadExpenses();
+
+}
+
+async function calculateTotal(){
+
+const start =
+document.getElementById(
+"startDate"
+).value;
+
+const end =
+document.getElementById(
+"endDate"
+).value;
+
+const response =
+await fetch(
+`/expenses/total_between/${userId}`,
+{
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+start,
+end
+})
+}
+);
+
+const data =
+await response.json();
+
+document.getElementById(
+"totalAmount"
+).innerText =
+data.total;
+
+}
+
+function goHome(){
+
+window.location.href =
+"/home";
+
+}
+
+</script>
+
+</body>
+</html>
