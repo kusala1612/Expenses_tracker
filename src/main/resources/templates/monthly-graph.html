@@ -73,9 +73,10 @@ Home
 </div>
 
 <script>
-
 const userId =
-localStorage.getItem("userId");
+localStorage.getItem("userId")
+||
+sessionStorage.getItem("userId");
 
 async function loadGraph(){
 
@@ -86,12 +87,36 @@ await fetch(
 
 const data =
 await response.json();
+console.log(data);
+const monthOrder = [
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER"
+];
 
-const labels =
-Object.keys(data);
+const labels = [];
+const values = [];
 
-const values =
-Object.values(data);
+monthOrder.forEach(month => {
+
+    if(data[month] !== undefined){
+
+        labels.push(month);
+
+        values.push(data[month]);
+
+    }
+
+});
 
 new Chart(
 document.getElementById(
