@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Category Wise Analysis</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#F8F5F2;
+    margin:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:1000px;
+    margin:30px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    background:#2D6A4F;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.legend{
+    margin-top:20px;
+    text-align:left;
+    display:inline-block;
+}
+
+.legend div{
+    margin:8px 0;
+}
+
+.color{
+    display:inline-block;
+    width:15px;
+    height:15px;
+    margin-right:10px;
+}
+
+canvas{
+    max-height:500px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>Category Wise Analysis</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<canvas id="pieChart"></canvas>
+
+<div class="legend">
+
+<div><span class="color" style="background:#2ECC71"></span>Food</div>
+
+<div><span class="color" style="background:#3498DB"></span>Travel</div>
+
+<div><span class="color" style="background:#9B59B6"></span>Shopping</div>
+
+<div><span class="color" style="background:#F39C12"></span>Bills</div>
+
+<div><span class="color" style="background:#E91E63"></span>Health</div>
+
+<div><span class="color" style="background:#F1C40F"></span>Entertainment</div>
+
+<div><span class="color" style="background:#95A5A6"></span>Other</div>
+
+</div>
+
+<br>
+
+<button onclick="goHome()">
+Home
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const userId =
+localStorage.getItem("userId");
+
+async function loadChart(){
+
+const response =
+await fetch(
+`/category_summary/${userId}`
+);
+
+const data =
+await response.json();
+
+const labels =
+Object.keys(data);
+
+const values =
+Object.values(data);
+
+new Chart(
+document.getElementById(
+"pieChart"
+),
+{
+type:"pie",
+
+data:{
+
+labels:labels,
+
+datasets:[{
+
+data:values,
+
+backgroundColor:[
+
+"#2ECC71",
+"#3498DB",
+"#9B59B6",
+"#F39C12",
+"#E91E63",
+"#F1C40F",
+"#95A5A6"
+
+]
+
+}]
+
+}
+
+}
+);
+
+}
+
+loadChart();
+
+function goHome(){
+
+window.location.href =
+"/home";
+
+}
+
+</script>
+
+</body>
+</html>
