@@ -218,18 +218,33 @@ Current Balance:
 
 if (res.ok && data.message === "Login successful!") {
 
-    localStorage.setItem(
-        "userId",
-        data.user_id
-    );
+    if(document.getElementById("stayLoggedIn").checked){
 
-    localStorage.setItem(
-        "username",
-        username
-    );
+        localStorage.setItem(
+            "userId",
+            data.user_id
+        );
+
+        localStorage.setItem(
+            "username",
+            username
+        );
+
+    }else{
+
+        sessionStorage.setItem(
+            "userId",
+            data.user_id
+        );
+
+        sessionStorage.setItem(
+            "username",
+            username
+        );
+
+    }
 
     window.location.href = "/home";
-
 }
  else {
           alert(data.message || "Login failed");
