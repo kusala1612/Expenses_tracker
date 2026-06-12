@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Download PDF</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#F8F5F2;
+    margin:0;
+}
+
+.header{
+    background:#2D6A4F;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    max-width:700px;
+    margin:30px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    margin-top:10px;
+    color:white;
+    cursor:pointer;
+}
+
+.download{
+    background:#40916C;
+}
+
+.home{
+    background:#2D6A4F;
+}
+
+.note{
+    color:#666;
+    font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>Download PDF Report</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<label>
+From Date (Optional)
+</label>
+
+<input
+type="date"
+id="fromDate">
+
+<label>
+To Date (Optional)
+</label>
+
+<input
+type="date"
+id="toDate">
+
+<p class="note">
+
+Leave dates empty to download
+the complete report.
+
+</p>
+
+<button
+class="download"
+onclick="downloadPDF()">
+
+Download PDF
+
+</button>
+
+<button
+class="home"
+onclick="goHome()">
+
+Home
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const userId =
+localStorage.getItem(
+"userId"
+);
+
+function downloadPDF(){
+
+const from =
+document.getElementById(
+"fromDate"
+).value;
+
+const to =
+document.getElementById(
+"toDate"
+).value;
+
+let url =
+`/pdf_report/${userId}`;
+
+if(from && to){
+
+url +=
+`?from=${from}&to=${to}`;
+
+}
+
+window.open(
+url,
+"_blank"
+);
+
+}
+
+function goHome(){
+
+window.location.href =
+"/home";
+
+}
+
+</script>
+
+</body>
+</html>
