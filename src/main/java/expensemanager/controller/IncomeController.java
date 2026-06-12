@@ -5,7 +5,8 @@ import expensemanager.repository.IncomeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.*;
 
 @RestController
@@ -57,6 +58,47 @@ public Map<String, Double> totalIncome(
     response.put(
             "total",
             total
+    );
+
+    return response;
+}
+@PutMapping("/income/{id}")
+public Income editIncome(
+        @PathVariable Long id,
+        @RequestBody Income updated){
+
+    Income income =
+            incomeRepository
+                    .findById(id)
+                    .orElseThrow();
+
+    income.setDate(
+            updated.getDate()
+    );
+
+    income.setSource(
+            updated.getSource()
+    );
+
+    income.setAmount(
+            updated.getAmount()
+    );
+
+    return incomeRepository.save(
+            income
+    );
+}@DeleteMapping("/income/{id}")
+public Map<String,String> deleteIncome(
+        @PathVariable Long id){
+
+    incomeRepository.deleteById(id);
+
+    Map<String,String> response =
+            new HashMap<>();
+
+    response.put(
+            "message",
+            "Income deleted"
     );
 
     return response;

@@ -50,4 +50,8 @@ public class PageController {
     public String pdfPage() {
         return "pdf-report";
     }
+    @GetMapping("/view-income")
+public String viewIncome() {
+    return "view-income";
+}
 }
