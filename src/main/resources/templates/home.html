@@ -137,17 +137,23 @@ onclick="logout()">
 
 <script>
 
+const username =
+localStorage.getItem("username")
+||
+sessionStorage.getItem("username");
+
 document.getElementById("username")
 .innerText =
-localStorage.getItem("username");
+username;
 
 function logout(){
 
-localStorage.clear();
+    localStorage.clear();
+    sessionStorage.clear();
 
-window.location.href="/";
+    window.location.href = "/";
 
-}
+}0
 
 </script>
 

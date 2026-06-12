@@ -692,5 +692,18 @@ if(expenseChart){
   }
  });
 }
+window.onload = function(){
+
+    const savedUser =
+    localStorage.getItem("userId");
+
+    if(savedUser){
+
+        window.location.href =
+        "/home";
+
+    }
+
+}
   </script>
 </body>
