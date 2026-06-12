@@ -411,4 +411,27 @@ public ResponseEntity<byte[]> generatePDF(
                     out.toByteArray()
             );
 }
+@GetMapping("/category_summary/{userId}")
+public Map<String, Double> categorySummary(
+        @PathVariable Long userId){
+
+    List<Expense> expenses =
+            expenseRepository.findByUserId(userId);
+
+    Map<String, Double> result =
+            new HashMap<>();
+
+    for(Expense e : expenses){
+
+        result.put(
+                e.getCategory(),
+                result.getOrDefault(
+                        e.getCategory(),
+                        0.0
+                ) + e.getAmount()
+        );
+    }
+
+    return result;
+}
 }
